@@ -49,6 +49,8 @@ SrvDevice::SrvDevice(ISrvProc* proc, int& hcid, const char* name, int delay):_cb
 
     if(_respdelay > 100 || _respdelay< 0)
         delay = 100; // nomore than 100 ms
+    _manDataLen = 0;
+    _manData    = 0;
 }
 
 /****************************************************************************************
@@ -65,6 +67,8 @@ SrvDevice::~SrvDevice()
 
     for(auto &h : _handles)
         delete h;
+
+    delete _manData;
 }
 
 /****************************************************************************************
@@ -171,7 +175,7 @@ int     SrvDevice::advertise(bool onoff)
             }
             _gapp =  new bu_gap(_hci);
             _gatt= new bu_gatt(_hci);
-            _gapp->advertise(_name.c_str(), _services, _pin);
+            _gapp->advertise(_name.c_str(), _services, _pin, _manData, _manDataLen );
         }
     }
     else
@@ -560,6 +564,22 @@ int SrvDevice::set_name(const char* name)
         return 0;
     }
     return -1;
+}
+
+void SrvDevice::setAdvManufacturerData( uint8_t* manData, uint8_t manDataLen )
+{
+    if( _manData )
+    {
+         delete _manData;
+         _manData = 0;
+         _manDataLen = 0;
+    }
+    if( manDataLen && manData )
+    {
+	_manData    = new uint8_t[ manDataLen ];
+        _manDataLen = manDataLen;
+	memcpy( _manData, manData, manDataLen );
+    }
 }
 
 

@@ -139,6 +139,7 @@ public:
     uint16_t add(GHandler* g);
     void add_default_service();
 
+    void  setAdvManufacturerData( uint8_t * manData, uint8_t manDataLen );
 
 public:
     ISrvProc*    _cb_proc;
@@ -170,6 +171,8 @@ private:
     bool        _defaults;
     S_STATE     _status;
     int         _respdelay;
+    uint8_t     _manDataLen;
+    uint8_t*    _manData;
     std::vector<hci_data_eater*> _eaters;
     std::vector<IService*>      _services;
 };

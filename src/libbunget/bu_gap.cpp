@@ -46,7 +46,10 @@ int bu_gap::set_btname(const char* name)
 */
 void bu_gap::advertise(const std::string& name,
                         std::vector<IService*>& srvs,
-                        uint32_t pin)
+		       uint32_t pin,
+                       uint8_t *man_data,
+		       uint8_t man_data_len
+		       )
 {
     if(srvs.size())
     {
@@ -63,6 +66,13 @@ void bu_gap::advertise(const std::string& name,
         }
         scn<<uint8_t(1+name.length())<<uint8_t(0x8);
         scn<<name;
+
+	if( man_data && man_data_len )
+	{
+           scn<<uint8_t(1+man_data_len)<<uint8_t(0xFF);
+	   for( int i = 0; i < man_data_len; i++ )
+	       scn<< man_data[i];
+	}
         _air_waveit(adv, scn);
     }
 }
@@ -97,6 +107,9 @@ void bu_gap::_air_waveit(const bybuff& add, const bybuff& scd)
     _hci->set_adv_data(sd);
 #endif
     _hci->enable_adv(true);
+
+#if 0
+    // Don't know why this is repeated!!!!!
     sd.len = scd.length();
     sd.data = (uint8_t*)scd.buffer();
     _hci->set_sca_res_data(sd);
@@ -104,6 +117,8 @@ void bu_gap::_air_waveit(const bybuff& add, const bybuff& scd)
     sd.len = add.length();
     sd.data = (uint8_t*)add.buffer();
     _hci->set_adv_data(sd);
+ #endif
+    
     _idle(32);
 }
 
