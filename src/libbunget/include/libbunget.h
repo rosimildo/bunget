@@ -205,6 +205,7 @@ public:
     virtual uint16_t handle()const=0;
     virtual int set_name(const char* btname)=0;
     virtual IServer::S_STATE status()const = 0;
+    virtual void  setAdvManufacturerData( uint8_t * manData, uint8_t manDataLen ) = 0;
 
 };
 
